@@ -22,7 +22,7 @@ export function genMatrix(cols, rows, n) {
     Math.ceil(Math.random() > throttle ? 0 : Math.random() * n)
   )
   a = [...a, ...a].sort(() => Math.random() - 0.5)
-  return fillLength(
+  return frameMatrix(
     [...Array(rows)].map((value, y) => a.slice(y * cols, (y + 1) * cols))
   )
 }
@@ -154,17 +154,17 @@ function isThreeLineLink(p1, p2, matrix) {
     for (let y = 0; y < rows; y++) {
       // 这里逻辑和twoLineLink类似，不赘述
       const p3 = [x, y]
-      const v3 = getMatrixValue(p3[0], p3[1], framedMatrix)
+      const v3 = getMatrixValue(p3[0], p3[1], matrix)
       if (v3 !== 0) continue
-      if (isPointsEqual(p1, p3) || isPointsEpual(p2, p3)) {
+      if (isPointsEqual(p1, p3) || isPointsEqual(p2, p3)) {
         continue
       }
 
       if (
-        (isVerticalLink(p1, p3, framedMatrix) &&
-          isHVLink(p3, p2, framedMatrix)) /*符合竖横竖？*/ ||
-        (isHorizontalLink(p1, p3, framedMatrix) &&
-          isVHLink(p3, p2, framedMatrix)) /*符合横竖横？*/
+        (isVerticalLink(p1, p3, matrix) &&
+          isHVLink(p3, p2, matrix)) /*符合竖横竖？*/ ||
+        (isHorizontalLink(p1, p3, matrix) &&
+          isVHLink(p3, p2, matrix)) /*符合横竖横？*/
       ) {
         return true
       }
