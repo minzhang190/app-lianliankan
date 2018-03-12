@@ -78,7 +78,7 @@ function isVerticalLink(p1, p2, matrix) {
     // 用点和点之间的坐标差值循环，如果在循环中发现非0值，则说明不能连线
     if (getMatrixValue(p1[0], y, matrix) !== 0) return false
   }
-  return true
+  return [p1, p2]
 }
 
 function isHorizontalLink(p1, p2, matrix) {
@@ -87,12 +87,18 @@ function isHorizontalLink(p1, p2, matrix) {
   for (let x = p1[0] + 1; x < p2[0]; x++) {
     if (getMatrixValue(x, p1[1], matrix) !== 0) return false
   }
-  return true
+  return [p1, p2]
 }
 
 // 可以用一条直线连接？（没有转弯）
 function isOneLineLink(p1, p2, matrix) {
   return isVerticalLink(p1, p2, matrix) || isHorizontalLink(p1, p2, matrix)
+}
+
+function joinLink(...links) {
+  return links.reduce((ret, link) => {
+    return [...ret, ...link.slice(1)]
+  })
 }
 
 function isHVLink(p1, p2, matrix) {
@@ -112,8 +118,10 @@ function isHVLink(p1, p2, matrix) {
       }
 
       // 如果p1和p3之间能画一条横线线，并且p2和p3之间能画一条竖线，则代表找到了
-      if (isHorizontalLink(p1, p3, matrix) && isVerticalLink(p2, p3, matrix)) {
-        return true
+      const link1 = isHorizontalLink(p1, p3, matrix)
+      const link2 = isVerticalLink(p3, p2, matrix)
+      if (link1 && link2) {
+        return joinLink(link1, link2)
       }
     }
   }
@@ -131,8 +139,10 @@ function isVHLink(p1, p2, matrix) {
       if (isPointsEqual(p1, p3) || isPointsEqual(p2, p3)) {
         continue
       }
-      if (isVerticalLink(p1, p3, matrix) && isHorizontalLink(p2, p3, matrix)) {
-        return true
+      const link1 = isVerticalLink(p1, p3, matrix)
+      const link2 = isHorizontalLink(p3, p2, matrix)
+      if (link1 && link2) {
+        return joinLink(link1, link2)
       }
     }
   }
@@ -160,13 +170,18 @@ function isThreeLineLink(p1, p2, matrix) {
         continue
       }
 
-      if (
-        (isVerticalLink(p1, p3, matrix) &&
-          isHVLink(p3, p2, matrix)) /*符合竖横竖？*/ ||
-        (isHorizontalLink(p1, p3, matrix) &&
-          isVHLink(p3, p2, matrix)) /*符合横竖横？*/
-      ) {
-        return true
+      const link1 = isVerticalLink(p1, p3, matrix)
+      const link2 = isHVLink(p3, p2, matrix)
+      /*符合竖横竖？*/
+      if (link1 && link2) {
+        return joinLink(link1, link2)
+      }
+
+      const link3 = isHorizontalLink(p1, p3, matrix)
+      const link4 = isVHLink(p3, p2, matrix)
+      /*符合横竖横？*/
+      if (link3 && link4) {
+        return joinLink(link3, link4)
       }
     }
   }
