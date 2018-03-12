@@ -35,7 +35,7 @@ class Game extends Component {
     height: 600,
     columns: 8,
     rows: 8,
-    range: 8,
+    range: 2,
     zeroThrottle: 0.6,
     maxCellSize: 40,
     cellMargin: 2,
