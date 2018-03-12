@@ -1,12 +1,24 @@
 import React, { Component } from 'react';
+import 'semantic-ui-css/semantic.min.css';
 
+import Game from './Game'
 class App extends Component {
-  render() {
-    return (
-      <div>
+  state = {}
 
-      </div>
-    );
+  componentDidMount() {
+    const el = document.querySelector('link[rel="stylesheet"]')
+    el.addEventListener('load', () =>
+      this.setState({
+        cssLoaded: true
+      })
+    )
+  }
+
+  render() {
+    const { cssLoaded } = this.state
+    return cssLoaded ? (
+      <Game/>
+    ) : null;
   }
 }
 
