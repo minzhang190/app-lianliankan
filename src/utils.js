@@ -71,20 +71,20 @@ function isPointsEqual(p1, p2) {
 
 // 注意这里判断是p1,p2之间是否可以画的下一条线，而不需要判断p1/p2点所在位置值是否相同
 function isVerticalLink(p1, p2, matrix) {
-  ;[p1, p2] = sortPoints(p1, p2) // 强制排序p1,p2两个点，这样循环的步长保证是1，不用考虑正负号
-  if (p1[0] !== p2[0] || p1[1] === p2[1]) return false
-  for (let y = p1[1] + 1; y < p2[1]; y++) {
+  const [q1, q2] = sortPoints(p1, p2) // 强制排序p1,p2两个点，这样循环的步长保证是1，不用考虑正负号
+  if (q1[0] !== q2[0] || q1[1] === q2[1]) return false
+  for (let y = q1[1] + 1; y < q2[1]; y++) {
     // 用点和点之间的坐标差值循环，如果在循环中发现非0值，则说明不能连线
-    if (getMatrixValue(p1[0], y, matrix) !== 0) return false
+    if (getMatrixValue(q1[0], y, matrix) !== 0) return false
   }
   return [p1, p2]
 }
 
 function isHorizontalLink(p1, p2, matrix) {
-  ;[p1, p2] = sortPoints(p1, p2)
-  if (p1[1] !== p2[1] || p1[0] === p2[0]) return false
-  for (let x = p1[0] + 1; x < p2[0]; x++) {
-    if (getMatrixValue(x, p1[1], matrix) !== 0) return false
+  const [q1, q2] = sortPoints(p1, p2)
+  if (q1[1] !== q2[1] || q1[0] === q2[0]) return false
+  for (let x = q1[0] + 1; x < q2[0]; x++) {
+    if (getMatrixValue(x, q1[1], matrix) !== 0) return false
   }
   return [p1, p2]
 }
@@ -102,7 +102,6 @@ function joinLink(...links) {
 
 function isHVLink(p1, p2, matrix) {
   const { cols, rows } = getMatrixDimension(matrix)
-  ;[p1, p2] = sortPoints(p1, p2)
   for (let x = 0; x < cols; x++) {
     for (let y = 0; y < rows; y++) {
       const p3 = [x, y] // 遍历整个矩阵，用p3去尝试是否能够满足条件
@@ -129,7 +128,6 @@ function isHVLink(p1, p2, matrix) {
 
 function isVHLink(p1, p2, matrix) {
   const { cols, rows } = getMatrixDimension(matrix)
-  ;[p1, p2] = sortPoints(p1, p2)
   for (let x = 0; x < cols; x++) {
     for (let y = 0; y < rows; y++) {
       const p3 = [x, y]
@@ -150,34 +148,34 @@ function isVHLink(p1, p2, matrix) {
 
 // 可以用两条直线连接？(一次转弯)
 function isTwoLineLink(p1, p2, matrix) {
-  ;[p1, p2] = sortPoints(p1, p2)
-  return isHVLink(p1, p2, matrix) || isVHLink(p1, p2, matrix)
+  const [q1, q2] = sortPoints(p1, p2)
+  return isHVLink(q1, q2, matrix) || isVHLink(q1, q2, matrix)
 }
 
 // 可以用3条直线连接？（二次转弯）
 function isThreeLineLink(p1, p2, matrix) {
   const { cols, rows } = getMatrixDimension(matrix)
-  ;[p1, p2] = sortPoints(p1, p2)
+  const [q1, q2] = sortPoints(p1, p2)
 
   for (let x = 0; x < cols; x++) {
     for (let y = 0; y < rows; y++) {
       // 这里逻辑和twoLineLink类似，不赘述
-      const p3 = [x, y]
-      const v3 = getMatrixValue(p3[0], p3[1], matrix)
+      const q3 = [x, y]
+      const v3 = getMatrixValue(q3[0], q3[1], matrix)
       if (v3 !== 0) continue
-      if (isPointsEqual(p1, p3) || isPointsEqual(p2, p3)) {
+      if (isPointsEqual(q1, q3) || isPointsEqual(q2, q3)) {
         continue
       }
 
-      const link1 = isVerticalLink(p1, p3, matrix)
-      const link2 = isHVLink(p3, p2, matrix)
+      const link1 = isVerticalLink(q1, q3, matrix)
+      const link2 = isHVLink(q3, q2, matrix)
       /*符合竖横竖？*/
       if (link1 && link2) {
         return joinLink(link1, link2)
       }
 
-      const link3 = isHorizontalLink(p1, p3, matrix)
-      const link4 = isVHLink(p3, p2, matrix)
+      const link3 = isHorizontalLink(q1, q3, matrix)
+      const link4 = isVHLink(q3, q2, matrix)
       /*符合横竖横？*/
       if (link3 && link4) {
         return joinLink(link3, link4)

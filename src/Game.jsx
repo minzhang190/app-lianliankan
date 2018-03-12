@@ -37,7 +37,7 @@ class Game extends Component {
     rows: 8,
     range: 8,
     zeroThrottle: 0.6,
-    maxCellSize: 32,
+    maxCellSize: 40,
     cellMargin: 2,
     gameTimeLimit: 180
   }
@@ -105,13 +105,15 @@ class Game extends Component {
   }
 
   tryLink(pair) {
-    const link = pair.length === 2 ? isLinkable(...pair, this.state.matrix) : false
+    const link =
+      pair.length === 2 ? isLinkable(...pair, this.state.matrix) : false
 
     if (link) {
+      console.log(link)
       this.setState(
         {
           linkPoints: link,
-          duration:  (this.state.duration + 3),
+          duration: this.state.duration + 3,
           matrix: removePair(pair, this.state.matrix),
           pair: []
         },
@@ -119,10 +121,9 @@ class Game extends Component {
       )
     } else {
       if (pair.length === 2) {
-        this.setState({pair: []})
+        this.setState({ pair: [] })
       }
     }
-
   }
 
   get isTimeout() {
@@ -176,7 +177,14 @@ class Game extends Component {
                   />
                 ) : null}
                 {this.isLinking ? (
-                  <Link points={linkPoints} origin={origin} />
+                  <Link
+                    points={linkPoints}
+                    origin={origin}
+                    width={width}
+                    height={height}
+                    cellSize={cellSize}
+                    cellMargin={cellMargin}
+                  />
                 ) : null}
               </div>
             </Segment>
