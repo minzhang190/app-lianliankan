@@ -1,0 +1,83 @@
+.board-layout {
+  position: relative;
+  display: inline-block;
+  background: #EEE;
+  border-radius: 4px;
+}
+
+.board {
+  position: absolute;
+  z-index: 0;
+}
+
+.cell {
+  position: absolute;
+  /* border: 1px solid black; */
+  cursor: default;
+  transform-style: preserve-3d;
+  transition: transform 1s, opacity 1s ease-in;
+  border-radius: 50%;
+}
+
+.cell.selected {
+  border: 1px solid red;
+}
+
+.item-0 {
+  background-color: red;
+  opacity: 0;
+  transform: rotateY(180deg);
+}
+
+.item-1 {
+  background-image: url('https://ws4.sinaimg.cn/large/006tNc79gy1fpa2f61uhfj303k03kjrb.jpg');
+  background-size: 100% 100%;
+}
+
+.item-2 {
+  background-image: url('https://ws3.sinaimg.cn/large/006tNc79gy1fpa2g2896uj303k03kgll.jpg');
+  background-size: 100% 100%;
+}
+
+.item-3 {
+  background-image: url('https://ws3.sinaimg.cn/large/006tNc79gy1fpa2grng7ej303k03kwei.jpg');
+  background-size: 100% 100%;
+}
+
+.item-4 {
+  background-image: url('https://ws1.sinaimg.cn/large/006tNc79gy1fpa2gzxuk5j3040040746.jpg');
+  background-size: 100% 100%;
+}
+
+.item-5 {
+  background-image: url('https://ws1.sinaimg.cn/large/006tNc79gy1fpa2h7j9kyj303k03kaa0.jpg');
+  background-size: 100% 100%;
+}
+
+.item-6 {
+  background-image: url('https://ws1.sinaimg.cn/large/006tNc79gy1fpa2hhwuuhj3040040t8o.jpg');
+  background-size: 100% 100%;
+}
+
+.item-7 {
+  background-image: url('https://ws3.sinaimg.cn/large/006tNc79gy1fpa2hp84xnj3040040wei.jpg');
+  background-size: 100% 100%;
+}
+
+.item-8 {
+  background-image: url('https://ws2.sinaimg.cn/large/006tNc79gy1fpa2hxy6dvj303k03k3yg.jpg');
+  background-size: 100% 100%;
+}
+
+.item-9 {
+  background-image: url('https://ws2.sinaimg.cn/large/006tNc79gy1fpa2i2k5e8j303k03kq2z.jpg');
+  background-size: 100% 100%;
+}
+
+.lines {
+  width:100%;
+  height:100%;
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+}

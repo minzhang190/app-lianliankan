@@ -4,7 +4,7 @@ import 'semantic-ui-css/semantic.min.css'
 import Board from './Board'
 import CountDown from './CountDown'
 import Link from './Link'
-import {calculateOrigin} from './utils'
+import { calculateOrigin, genMatrix, removePair, isLinkable } from './utils'
 
 import {
   Header,
@@ -26,7 +26,8 @@ class Game extends Component {
     range: PropTypes.number,
     zeroThrottle: PropTypes.number,
     maxCellSize: PropTypes.number,
-    cellMargin: PropTypes.number
+    cellMargin: PropTypes.number,
+    gameTimeLimit: PropTypes.number
   }
 
   static defaultProps = {
@@ -36,18 +37,19 @@ class Game extends Component {
     rows: 8,
     range: 8,
     zeroThrottle: 0.6,
-    maxCellSize: 20,
-    cellMargin: 2
+    maxCellSize: 32,
+    cellMargin: 2,
+    gameTimeLimit: 180
   }
 
   state = {
-    playing: false,
-    duration: 180,
+    duration: 0,
     pair: [],
     suggestTimes: 3,
-    matrix: [],
+    matrix: null,
     origin: [0, 0], // 原点
-    cellSize: 20
+    cellSize: 32,
+    linkPoints: []
   }
 
   componentWillMount() {
@@ -57,44 +59,126 @@ class Game extends Component {
     const wSize = (width - (_columns - 1) * cellMargin) / _columns
     const hSize = (height - (_rows - 1) * cellMargin) / _rows
     const cellSize = Math.min(wSize, hSize, maxCellSize)
-    const origin = calculateOrigin(width, height, _columns, _rows, cellSize, cellMargin)
-    this.setState({cellSize, origin})
+    const origin = calculateOrigin(
+      width,
+      height,
+      _columns,
+      _rows,
+      cellSize,
+      cellMargin
+    )
+    this.setState({ cellSize, origin })
   }
 
-  handleStart = () => {}
+  handleStart = () => {
+    const { columns, rows, range, zeroThrottle } = this.props
+    const matrix = genMatrix(columns, rows, range, zeroThrottle)
+    this.setState({
+      matrix,
+      duration: this.props.gameTimeLimit
+    })
+  }
 
-  handleStop = () => {}
+  handleStop = () => {
+    this.setState({
+      matrix: null
+    })
+  }
 
-  handleTick = () => {}
+  handleTick = () => {
+    const duration = this.state.duration - 1
+    this.setState({ duration })
+  }
 
-  handleCellClick = () => {}
+  handleCellClick = point => {
+    let { pair, matrix } = this.state
+    if (pair.length === 0) {
+      pair = [point]
+    } else if (pair.length === 1) {
+      // @todo click same point
+      pair = [pair[0], point]
+    }
 
-  handleTimeout = () => {}
+    this.setState({ pair }, () => {
+      this.tryLink(pair)
+    })
+  }
+
+  tryLink(pair) {
+    const link = pair.length === 2 ? isLinkable(...pair, this.state.matrix) : false
+
+    if (link) {
+      this.setState(
+        {
+          linkPoints: link,
+          duration:  (this.state.duration + 3),
+          matrix: removePair(pair, this.state.matrix),
+          pair: []
+        },
+        () => setTimeout(() => this.setState({ linkPoints: [] }), 200)
+      )
+    } else {
+      if (pair.length === 2) {
+        this.setState({pair: []})
+      }
+    }
+
+  }
+
+  get isTimeout() {
+    return this.state.duration === 0
+  }
+
+  get isGamePlaying() {
+    return !!this.state.matrix
+  }
+
+  get isLinking() {
+    return this.state.linkPoints.length > 1
+  }
 
   render() {
     const {
       duration,
-      playing,
+      pair,
       suggestTimes,
+      matrix,
+      origin,
+      cellSize,
+      linkPoints
+    } = this.state
+    const {
       width,
       height,
       columns,
       rows,
       range,
       zeroThrottle,
-      matrix,
-      linkPoints
-    } = this.state
+      maxCellSize,
+      cellMargin,
+      gameTimeLimit
+    } = this.props
     return (
       <Container style={{ marginTop: '1em' }}>
         <Header as="h1">连连看</Header>
         <Grid centered stretched celled="internally">
           <Grid.Column width={13}>
-            <Segment>
-              <Board matrix={matrix} onCellClick={this.handleCellClick} />
-              {linkPoints && linkPoints.length > 1 ? (
-                <Link points={linkPoints} />
-              ) : null}
+            <Segment textAlign="center">
+              <div className="board-layout" style={{ width, height }}>
+                {this.isGamePlaying ? (
+                  <Board
+                    selected={pair}
+                    matrix={matrix}
+                    cellSize={cellSize}
+                    cellMargin={cellMargin}
+                    origin={origin}
+                    onCellClick={this.handleCellClick}
+                  />
+                ) : null}
+                {this.isLinking ? (
+                  <Link points={linkPoints} origin={origin} />
+                ) : null}
+              </div>
             </Segment>
           </Grid.Column>
           <Grid.Column width={3}>
@@ -111,7 +195,7 @@ class Game extends Component {
               </Segment>
               <Segment>
                 <Button negative attached="bottom">
-                  提示 (3 left)
+                  提示 (还剩{suggestTimes}次)
                 </Button>
               </Segment>
               <Segment>

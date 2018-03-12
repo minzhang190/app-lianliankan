@@ -15,9 +15,8 @@ function frameMatrix(
   return [top, ...middle, bottom]
 }
 
-export function genMatrix(cols, rows, n) {
+export function genMatrix(cols, rows, n, throttle = 0.5) {
   if ((cols * rows) % 2 !== 0) throw Error('cols*rows结果必须为偶数')
-  const throttle = 0.5 // 有50%几率填充0
   let a = [...Array(cols * rows / 2)].map(() =>
     Math.ceil(Math.random() > throttle ? 0 : Math.random() * n)
   )
@@ -211,7 +210,33 @@ export function getAllLink(matrix) {
   return ret
 }
 
+export function removePair(pair, matrix) {
+  const newMatrix = JSON.parse(JSON.stringify(matrix))
+  setMatrixValue(0, pair[0][0], pair[0][1], newMatrix)
+  setMatrixValue(0, pair[1][0], pair[1][1], newMatrix)
+  return newMatrix
+}
+
+Array.prototype.sum = function() {
+  return this.reduce((sum, next) => sum + next, 0)
+}
+
+export function isGameFinished(matrix) {
+  for (let i = 0; i < matrix.length; i++) {
+    if(matrix[i].sum() > 0) return false
+  }
+  return true
+}
+
+export function isGameStuck(matrix) {
+  return getAllLink(matrix).length === 0
+}
+
 export function isLinkable(p1, p2, matrix) {
+  const v1 = getMatrixValue(...p1, matrix)
+  const v2 = getMatrixValue(...p2, matrix)
+  if (v1 !== v2) return false
+
   const link1 = isOneLineLink(p1, p2, matrix)
   if (link1) return link1
 
@@ -220,6 +245,8 @@ export function isLinkable(p1, p2, matrix) {
 
   const link3 = isThreeLineLink(p1, p2, matrix)
   if (link3) return link3
+
+  return false
 }
 
 export function calculateOrigin(
