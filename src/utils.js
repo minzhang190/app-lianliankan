@@ -201,11 +201,7 @@ export function getAllLink(matrix) {
           const p2 = [xx, yy]
           const v2 = getMatrixValue(p2[0], p2[1], matrix)
           if (v1 !== v2) continue
-          if (
-            isOneLineLink(p1, p2, matrix) ||
-            isTwoLineLink(p1, p2, matrix) ||
-            isThreeLineLink(p1, p2, matrix)
-          ) {
+          if (isLinkable(p1, p2, matrix)) {
             ret.push([p1, p2])
           }
         }
@@ -215,7 +211,16 @@ export function getAllLink(matrix) {
   return ret
 }
 
-export function isLinkable(p1, p2, matrix) {}
+export function isLinkable(p1, p2, matrix) {
+  const link1 = isOneLineLink(p1, p2, matrix)
+  if (link1) return link1
+
+  const link2 = isTwoLineLink(p1, p2, matrix)
+  if (link2) return link2
+
+  const link3 = isThreeLineLink(p1, p2, matrix)
+  if (link3) return link3
+}
 
 export function calculateOrigin(
   width,
