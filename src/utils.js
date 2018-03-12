@@ -1,9 +1,30 @@
+function frameMatrix(
+  matrix,
+  fill = 0 /*填充0*/,
+  thickness = 1 /*默认边框宽度为0*/
+) {
+  const { cols, rows } = getMatrixDimension(matrix)
+  const fillLength = length => [...Array(length)].map(() => fill) // 填充一定长度的值
+  const top = fillLength(cols + 2 * thickness)
+  const bottom = fillLength(cols + 2 * thickness)
+  const middle = matrix.map(row => [
+    ...fillLength(thickness),
+    ...row,
+    ...fillLength(thickness)
+  ])
+  return [top, ...middle, bottom]
+}
+
 export function genMatrix(cols, rows, n) {
-  if (cols * rows % 2 !== 0) throw Error('cols*rows结果必须为偶数')
+  if ((cols * rows) % 2 !== 0) throw Error('cols*rows结果必须为偶数')
   const throttle = 0.5 // 有50%几率填充0
-  let a = [...Array(cols * rows / 2)].map(() => Math.ceil(Math.random() > throttle ? 0 : Math.random() * n))
+  let a = [...Array(cols * rows / 2)].map(() =>
+    Math.ceil(Math.random() > throttle ? 0 : Math.random() * n)
+  )
   a = [...a, ...a].sort(() => Math.random() - 0.5)
-  return [...Array(rows)].map((value, y) => a.slice(y * cols, (y + 1) * cols))
+  return fillLength(
+    [...Array(rows)].map((value, y) => a.slice(y * cols, (y + 1) * cols))
+  )
 }
 
 function matrixForPrint(matrix) {
@@ -51,7 +72,7 @@ function isPointsEqual(p1, p2) {
 
 // 注意这里判断是p1,p2之间是否可以画的下一条线，而不需要判断p1/p2点所在位置值是否相同
 function isVerticalLink(p1, p2, matrix) {
-  [p1, p2] = sortPoints(p1, p2) // 强制排序p1,p2两个点，这样循环的步长保证是1，不用考虑正负号
+  ;[p1, p2] = sortPoints(p1, p2) // 强制排序p1,p2两个点，这样循环的步长保证是1，不用考虑正负号
   if (p1[0] !== p2[0] || p1[1] === p2[1]) return false
   for (let y = p1[1] + 1; y < p2[1]; y++) {
     // 用点和点之间的坐标差值循环，如果在循环中发现非0值，则说明不能连线
@@ -61,7 +82,7 @@ function isVerticalLink(p1, p2, matrix) {
 }
 
 function isHorizontalLink(p1, p2, matrix) {
-  [p1, p2] = sortPoints(p1, p2)
+  ;[p1, p2] = sortPoints(p1, p2)
   if (p1[1] !== p2[1] || p1[0] === p2[0]) return false
   for (let x = p1[0] + 1; x < p2[0]; x++) {
     if (getMatrixValue(x, p1[1], matrix) !== 0) return false
@@ -76,7 +97,7 @@ function isOneLineLink(p1, p2, matrix) {
 
 function isHVLink(p1, p2, matrix) {
   const { cols, rows } = getMatrixDimension(matrix)
-    ;[p1, p2] = sortPoints(p1, p2)
+  ;[p1, p2] = sortPoints(p1, p2)
   for (let x = 0; x < cols; x++) {
     for (let y = 0; y < rows; y++) {
       const p3 = [x, y] // 遍历整个矩阵，用p3去尝试是否能够满足条件
@@ -101,7 +122,7 @@ function isHVLink(p1, p2, matrix) {
 
 function isVHLink(p1, p2, matrix) {
   const { cols, rows } = getMatrixDimension(matrix)
-    ;[p1, p2] = sortPoints(p1, p2)
+  ;[p1, p2] = sortPoints(p1, p2)
   for (let x = 0; x < cols; x++) {
     for (let y = 0; y < rows; y++) {
       const p3 = [x, y]
@@ -120,43 +141,31 @@ function isVHLink(p1, p2, matrix) {
 
 // 可以用两条直线连接？(一次转弯)
 function isTwoLineLink(p1, p2, matrix) {
-  [p1, p2] = sortPoints(p1, p2)
+  ;[p1, p2] = sortPoints(p1, p2)
   return isHVLink(p1, p2, matrix) || isVHLink(p1, p2, matrix)
-}
-
-function frameMatrix(matrix, fill=0/*填充0*/, thickness=1 /*默认边框宽度为0*/) {
-  const {cols, rows} = getMatrixDimension(matrix)
-  const fillLength = (length) => [...Array(length)].map(() => fill) // 填充一定长度的值
-  const top = fillLength(cols + 2*thickness)
-  const bottom = fillLength(cols + 2*thickness)
-  const middle = matrix.map(row => [...fillLength(thickness), ...row, ...fillLength(thickness)])
-  return [top, ...middle, bottom]
 }
 
 // 可以用3条直线连接？（二次转弯）
 function isThreeLineLink(p1, p2, matrix) {
-  const framedMatrix = frameMatrix(matrix) // 先镶一圈0
-  const { cols, rows } = getMatrixDimension(framedMatrix)
-
+  const { cols, rows } = getMatrixDimension(matrix)
   ;[p1, p2] = sortPoints(p1, p2)
-  // 修正p1, p2的值, 坐标点应该都+1，新点起名叫q1, q2
-  const q1 = [p1[0]+1, p1[1]+1]
-  const q2 = [p2[0]+1, p2[1]+1]
 
   for (let x = 0; x < cols; x++) {
     for (let y = 0; y < rows; y++) {
       // 这里逻辑和twoLineLink类似，不赘述
-      const q3 = [x, y]
-      const v3 = getMatrixValue(q3[0], q3[1], framedMatrix)
+      const p3 = [x, y]
+      const v3 = getMatrixValue(p3[0], p3[1], framedMatrix)
       if (v3 !== 0) continue
-      if (isPointsEqual(q1, q3) || isPointsEqual(q2, q3)) {
+      if (isPointsEqual(p1, p3) || isPointsEpual(p2, p3)) {
         continue
       }
 
       if (
-          (isVerticalLink(q1, q3, framedMatrix) && isHVLink(q3, q2, framedMatrix)) /*符合竖横竖？*/||
-          (isHorizontalLink(q1, q3, framedMatrix) && isVHLink(q3, q2, framedMatrix)/*符合横竖横？*/)
-        ) {
+        (isVerticalLink(p1, p3, framedMatrix) &&
+          isHVLink(p3, p2, framedMatrix)) /*符合竖横竖？*/ ||
+        (isHorizontalLink(p1, p3, framedMatrix) &&
+          isVHLink(p3, p2, framedMatrix)) /*符合横竖横？*/
+      ) {
         return true
       }
     }
@@ -178,9 +187,9 @@ export function getAllLink(matrix) {
           const v2 = getMatrixValue(p2[0], p2[1], matrix)
           if (v1 !== v2) continue
           if (
-            isOneLineLink(p1, p2, matrix)
-            || isTwoLineLink(p1, p2, matrix)
-            || isThreeLineLink(p1, p2, matrix)
+            isOneLineLink(p1, p2, matrix) ||
+            isTwoLineLink(p1, p2, matrix) ||
+            isThreeLineLink(p1, p2, matrix)
           ) {
             ret.push([p1, p2])
           }
@@ -191,15 +200,17 @@ export function getAllLink(matrix) {
   return ret
 }
 
-export function isLinkable(p1, p2, matrix) {
+export function isLinkable(p1, p2, matrix) {}
 
-}
-
-export function calculateOrigin(width, height, columns, rows, cellSize, cellMargin) {
+export function calculateOrigin(
+  width,
+  height,
+  columns,
+  rows,
+  cellSize,
+  cellMargin
+) {
   const w = columns * cellSize + (columns - 1) * cellMargin
   const h = rows * cellSize + (rows - 1) * cellMargin
-  return [
-    (width - w)/2,
-    (height- h)/2
-  ]
+  return [(width - w) / 2, (height - h) / 2]
 }
