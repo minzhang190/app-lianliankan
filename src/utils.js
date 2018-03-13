@@ -3,7 +3,7 @@ function frameMatrix(
   fill = 0 /*填充0*/,
   thickness = 1 /*默认边框宽度为0*/
 ) {
-  const { cols, rows } = getMatrixDimension(matrix)
+  const { cols } = getMatrixDimension(matrix)
   const fillLength = length => [...Array(length)].map(() => fill) // 填充一定长度的值
   const top = fillLength(cols + 2 * thickness)
   const bottom = fillLength(cols + 2 * thickness)
@@ -26,7 +26,7 @@ export function genMatrix(cols, rows, n, throttle = 0.5) {
   )
 }
 
-function matrixForPrint(matrix) {
+export function matrixForPrint(matrix) {
   return matrix.map(row => row.join(' ')).join('\n')
 }
 
@@ -217,7 +217,7 @@ export function removePair(pair, matrix) {
   return newMatrix
 }
 
-Array.prototype.sum = function() {
+Array.prototype.sum = function() { // eslint-disable-line
   return this.reduce((sum, next) => sum + next, 0)
 }
 

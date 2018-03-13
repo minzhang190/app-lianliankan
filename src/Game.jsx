@@ -18,11 +18,9 @@ import {
   Header,
   Container,
   Grid,
-  Image,
   Segment,
   Dimmer,
   Button,
-  Statistic
 } from 'semantic-ui-react'
 
 class Game extends Component {
@@ -197,7 +195,7 @@ class Game extends Component {
 
   handleCellClick = point => {
     if (!this.isPlayable) return
-    let { selected, matrix } = this.state
+    let { selected } = this.state
     if (selected.length === 0) {
       selected = [point]
     } else if (selected.length === 1) {
@@ -227,6 +225,8 @@ class Game extends Component {
         icon = '😬'
         text =
           'You Won! There Is Still ' + this.state.duration + ' Seconds Left!'
+        break
+      default:
         break
     }
 
