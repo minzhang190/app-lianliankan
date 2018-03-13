@@ -30,7 +30,8 @@
   border: 2px solid red;
 }
 .cell.suggestion {
-  background-size: 110% 110%;
+  background-size: 120% 120%;
+  /* border: 2px dotted navy; */
 }
 
 .item-0 {

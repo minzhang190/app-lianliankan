@@ -40,8 +40,8 @@ class Game extends Component {
   static defaultProps = {
     width: 800,
     height: 600,
-    columns: 4,
-    rows: 4,
+    columns: 8,
+    rows: 8,
     range: 9,
     zeroThrottle: 1,
     maxCellSize: 50,
@@ -182,7 +182,7 @@ class Game extends Component {
       }, () => {
         setTimeout(() => {
           this.setState({suggestion: []})
-        }, 200)
+        }, 500)
       })
     }
   }
