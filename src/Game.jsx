@@ -226,7 +226,7 @@ class Game extends Component {
       case this.state.won:
         icon = '😬'
         text =
-          'You Won! There Is Still ' + this.state.duration + ' Seconds Left!'
+          'You Won! There Are Still ' + this.state.duration + ' Seconds Left!'
         break
       default:
         break
