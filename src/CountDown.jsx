@@ -16,7 +16,6 @@ class CountDown extends Component {
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.duration === 0) {
-      this.props.onTimeout()
       this.clearTimer()
     }
   }
