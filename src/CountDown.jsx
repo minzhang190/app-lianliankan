@@ -6,7 +6,6 @@ class CountDown extends Component {
   static propTypes = {
     duration: PropTypes.number,
     onTick: PropTypes.func,
-    onTimeout: PropTypes.func
   }
 
   componentWillMount() {

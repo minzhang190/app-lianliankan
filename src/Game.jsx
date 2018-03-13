@@ -192,8 +192,6 @@ class Game extends Component {
     this.setState({ duration })
   }
 
-  handleTimeout = () => {}
-
   handleCellClick = point => {
     if (!this.isPlayable) return
     let { selected } = this.state
@@ -351,7 +349,6 @@ class Game extends Component {
         <CountDown
           duration={duration}
           onTick={this.handleTick}
-          onTimeout={this.handleTimeout}
         />
       </Segment>
     ) : null
