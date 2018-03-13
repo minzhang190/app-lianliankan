@@ -35,9 +35,9 @@ class Game extends Component {
     height: 600,
     columns: 8,
     rows: 8,
-    range: 2,
+    range: 9,
     zeroThrottle: 0.6,
-    maxCellSize: 40,
+    maxCellSize: 50,
     cellMargin: 2,
     gameTimeLimit: 180
   }
@@ -165,7 +165,12 @@ class Game extends Component {
         <Grid centered stretched celled="internally">
           <Grid.Column width={13}>
             <Segment textAlign="center">
-              <div className="board-layout" style={{ width, height }}>
+              <div
+                className={
+                  'board-layout' + (this.isGamePlaying ? ' playing' : '')
+                }
+                style={{ width, height }}
+              >
                 {this.isGamePlaying ? (
                   <Board
                     selected={pair}
