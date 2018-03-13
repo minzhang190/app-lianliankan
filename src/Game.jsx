@@ -11,7 +11,8 @@ import {
   isLinkable,
   isGoalAccomplished,
   isGameStuck,
-  getAllLink
+  getAllLink,
+  isPointsEqual
 } from './utils'
 
 import {
@@ -199,8 +200,11 @@ class Game extends Component {
     if (selected.length === 0) {
       selected = [point]
     } else if (selected.length === 1) {
-      // @todo click same point
-      selected = [selected[0], point]
+      if (isPointsEqual(selected[0], point)) {
+        selected = []
+      } else {
+        selected = [selected[0], point]
+      }
     }
 
     this.setState({ selected }, () => {

@@ -65,7 +65,7 @@ function sortPoints(p1, p2) {
   }
 }
 
-function isPointsEqual(p1, p2) {
+export function isPointsEqual(p1, p2) {
   return p1[0] === p2[0] && p1[1] === p2[1]
 }
 
