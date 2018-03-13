@@ -8,6 +8,7 @@ class Board extends Component {
     cellMargin: PropTypes.number,
     origin: PropTypes.any,
     selected: PropTypes.array,
+    suggestion: PropTypes.array,
     onCellClick: PropTypes.func
   }
 
@@ -18,6 +19,7 @@ class Board extends Component {
       cellMargin,
       cellSize,
       selected,
+      suggestion,
       onCellClick
     } = this.props
     return (
@@ -31,6 +33,9 @@ class Board extends Component {
                 value +
                 (selected.find(p => p[0] === x && p[1] === y)
                   ? ' selected'
+                  : '') +
+                ((suggestion || []).find(p => p[0] === x && p[1] === y)
+                  ? ' suggestion'
                   : '')
               }
               style={{

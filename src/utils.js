@@ -194,10 +194,12 @@ export function getAllLink(matrix) {
       const v1 = getMatrixValue(p1[0], p1[1], matrix)
       if (v1 === 0) continue
       for (let yy = y; yy < rows; yy++) {
-        for (let xx = x; xx < cols; xx++) {
+        for (let xx = 0; xx < cols; xx++) {
           const p2 = [xx, yy]
           const v2 = getMatrixValue(p2[0], p2[1], matrix)
           if (v1 !== v2) continue
+          if (isPointsEqual(p1, p2)) continue
+
           if (isLinkable(p1, p2, matrix)) {
             ret.push([p1, p2])
           }
@@ -219,7 +221,7 @@ Array.prototype.sum = function() {
   return this.reduce((sum, next) => sum + next, 0)
 }
 
-export function isGameFinished(matrix) {
+export function isGoalAccomplished(matrix) {
   for (let i = 0; i < matrix.length; i++) {
     if(matrix[i].sum() > 0) return false
   }

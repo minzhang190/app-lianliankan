@@ -19,12 +19,18 @@
   /* border: 1px solid black; */
   cursor: default;
   transform-style: preserve-3d;
-  transition: transform 1s, opacity 1s ease-in;
+  transition: transform 1s, opacity 1s ease-in, background-size .2s;
   border-radius: 50%;
+  background-position:center;
+  background-size: 90% 90%;
+  background-repeat: no-repeat;
 }
 
 .cell.selected {
   border: 2px solid red;
+}
+.cell.suggestion {
+  background-size: 110% 110%;
 }
 
 .item-0 {
@@ -35,47 +41,38 @@
 
 .item-1 {
   background-image: url('./images/apple.png');
-  background-size: 100% 100%;
 }
 
 .item-2 {
   background-image: url('./images/cherry.png');
-  background-size: 100% 100%;
 }
 
 .item-3 {
   background-image: url('./images/grape.png');
-  background-size: 100% 100%;
 }
 
 .item-4 {
   background-image: url('./images/lemon.png');
-  background-size: 100% 100%;
 }
 
 .item-5 {
   background-image: url('./images/orange.png');
-  background-size: 100% 100%;
 }
 
 .item-6 {
   background-image: url('./images/pear.png');
-  background-size: 100% 100%;
 }
 
 .item-7 {
   background-image: url('./images/pineapple.png');
-  background-size: 100% 100%;
 }
 
 .item-8 {
   background-image: url('./images/strawberry.png');
-  background-size: 100% 100%;
 }
 
 .item-9 {
   background-image: url('./images/watermelon.png');
-  background-size: 100% 100%;
 }
 
 .lines {
