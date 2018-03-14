@@ -15,15 +15,26 @@ function frameMatrix(
   return [top, ...middle, bottom]
 }
 
-export function genMatrix(cols, rows, n, throttle = 0.5) {
+function isValid(matrix) {
+  if (isGoalAccomplished(matrix)) return false
+  if (isGameStuck(matrix)) return false
+  return true
+}
+
+export function genMatrix(cols, rows, n, throttle = 0.5, checkValid=true) {
   if ((cols * rows) % 2 !== 0) throw Error('cols*rows结果必须为偶数')
   let a = [...Array(cols * rows / 2)].map(() =>
     Math.ceil(Math.random() > throttle ? 0 : Math.random() * n)
   )
   a = [...a, ...a].sort(() => Math.random() - 0.5)
-  return frameMatrix(
+  const matrix = frameMatrix(
     [...Array(rows)].map((value, y) => a.slice(y * cols, (y + 1) * cols))
   )
+  if (checkValid && !isValid(matrix)) {
+    return genMatrix(...arguments)
+  } else {
+    return matrix
+  }
 }
 
 export function matrixForPrint(matrix) {

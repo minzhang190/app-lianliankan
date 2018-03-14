@@ -41,8 +41,8 @@ class Game extends Component {
   static defaultProps = {
     width: 800,
     height: 600,
-    columns: 18,
-    rows: 18,
+    columns: 2,
+    rows: 2,
     range: 9,
     zeroThrottle: 1,
     maxCellSize: 50,
@@ -277,7 +277,7 @@ class Game extends Component {
         <Board
           key="board"
           selected={[]}
-          matrix={genMatrix(columns, rows, 0, 0)}
+          matrix={genMatrix(columns, rows, 0, 0, false)}
           cellSize={cellSize}
           cellMargin={cellMargin}
           origin={origin}
