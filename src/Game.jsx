@@ -12,7 +12,8 @@ import {
   isGoalAccomplished,
   isGameStuck,
   getAllLink,
-  isPointsEqual
+  isPointsEqual,
+  getSuggestion
 } from './utils'
 
 import {
@@ -21,7 +22,7 @@ import {
   Grid,
   Segment,
   Dimmer,
-  Button,
+  Button
 } from 'semantic-ui-react'
 
 class Game extends Component {
@@ -40,8 +41,8 @@ class Game extends Component {
   static defaultProps = {
     width: 800,
     height: 600,
-    columns: 8,
-    rows: 8,
+    columns: 18,
+    rows: 18,
     range: 9,
     zeroThrottle: 1,
     maxCellSize: 50,
@@ -146,12 +147,10 @@ class Game extends Component {
     }
   }
 
-
   handleStart = () => {
     const { columns, rows, range, zeroThrottle } = this.props
     const matrix = genMatrix(columns, rows, range, zeroThrottle)
     // const matrix = [[0,0,0,0,0,0],[0,0,0,6,0,0],[0,0,0,2,0,0],[0,2,0,0,0,0],[0,0,6,0,0,0],[0,0,0,0,0,0]]
-    getAllLink(matrix)
     this.setState({
       matrix,
       duration: this.props.gameTimeLimit,
@@ -160,7 +159,7 @@ class Game extends Component {
       start: false,
       selected: [],
       suggestion: [],
-      suggestTimes:3
+      suggestTimes: 3
     })
   }
 
@@ -171,20 +170,19 @@ class Game extends Component {
   }
 
   handleSuggestion = () => {
-    const {matrix, suggestTimes} = this.state
-    const links = getAllLink(matrix)
-    if (links.length > 0) {
-      const link = links[Math.floor(Math.random() * links.length)]
-      const points = [link[0], link[link.length - 1]]
-      this.setState({
-        suggestion: points,
+    const { matrix, suggestTimes } = this.state
+
+    this.setState(
+      {
+        suggestion: getSuggestion(matrix),
         suggestTimes: suggestTimes - 1
-      }, () => {
+      },
+      () => {
         setTimeout(() => {
-          this.setState({suggestion: []})
+          this.setState({ suggestion: [] })
         }, 500)
-      })
-    }
+      }
+    )
   }
 
   handleTick = () => {
@@ -263,7 +261,14 @@ class Game extends Component {
   }
 
   renderPlaying() {
-    const { cellSize, origin, selected, matrix, linkPoints, suggestion } = this.state
+    const {
+      cellSize,
+      origin,
+      selected,
+      matrix,
+      linkPoints,
+      suggestion
+    } = this.state
     const { width, height, columns, rows, cellMargin } = this.props
     const ret = []
     if (!this.isGamePlaying) {
@@ -331,7 +336,7 @@ class Game extends Component {
     return this.isPlayable ? (
       <Segment>
         <Button
-          color='purple'
+          color="purple"
           attached="bottom"
           disabled={suggestTimes === 0}
           onClick={this.handleSuggestion}
@@ -345,11 +350,8 @@ class Game extends Component {
   renderCountDown() {
     const { duration } = this.state
     return this.isPlayable ? (
-      <Segment textAlign='center'>
-        <CountDown
-          duration={duration}
-          onTick={this.handleTick}
-        />
+      <Segment textAlign="center">
+        <CountDown duration={duration} onTick={this.handleTick} />
       </Segment>
     ) : null
   }

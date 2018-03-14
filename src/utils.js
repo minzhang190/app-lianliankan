@@ -229,7 +229,52 @@ export function isGoalAccomplished(matrix) {
 }
 
 export function isGameStuck(matrix) {
-  return getAllLink(matrix).length === 0
+  // return getAllLink(matrix).length === 0
+  const { rows, cols } = getMatrixDimension(matrix)
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+      const p1 = [x, y]
+      const v1 = getMatrixValue(p1[0], p1[1], matrix)
+      if (v1 === 0) continue
+      for (let yy = y; yy < rows; yy++) {
+        for (let xx = 0; xx < cols; xx++) {
+          const p2 = [xx, yy]
+          const v2 = getMatrixValue(p2[0], p2[1], matrix)
+          if (v1 !== v2 || isPointsEqual(p1, p2)) continue
+          if (isLinkable(p1, p2, matrix)) {
+            return false
+          }
+        }
+      }
+    }
+  }
+
+  return true
+}
+
+function randomPoint(cols, rows) {
+  return [Math.floor(Math.random() * cols), Math.floor(Math.random() * rows)]
+}
+
+export function getSuggestion(matrix) {
+  const { rows, cols } = getMatrixDimension(matrix)
+  let p1 = null
+  let v1 = 0
+  do {
+    p1 = randomPoint(cols, rows)
+    v1 = getMatrixValue(...p1, matrix)
+  } while( v1 === 0)
+
+  for (let x=0; x< cols; x++) {
+    for(let y=0; y<rows; y++) {
+      const p2 = [x, y]
+      const v2 = getMatrixValue(...p2, matrix)
+      if (v2!==v1 || isPointsEqual(p1, p2)) continue
+      const link = isLinkable(p1, p2, matrix)
+      if (link) return link
+    }
+  }
+  return getSuggestion(matrix) // 递归
 }
 
 export function isLinkable(p1, p2, matrix) {
