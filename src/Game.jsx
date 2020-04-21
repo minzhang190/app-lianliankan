@@ -40,7 +40,8 @@ class Game extends Component {
     durationIncrease: PropTypes.number,
     suggestTimes: PropTypes.number,
     shuffleTimes: PropTypes.number,
-    shuffleOnStuck: PropTypes.bool
+    shuffleOnStuck: PropTypes.bool,
+    matching: PropTypes.bool
   }
 
   static defaultProps = {
@@ -56,7 +57,8 @@ class Game extends Component {
     durationIncrease: 3,
     suggestTimes: 3,
     shuffleTimes: 3,
-    shuffleOnStuck: false
+    shuffleOnStuck: false,
+    matching: false
   }
 
   state = {
@@ -99,7 +101,7 @@ class Game extends Component {
 
   checkIsStuck() {
     const { matrix } = this.state
-    return isGameStuck(matrix)
+    return isGameStuck(matrix, this.props.matching)
   }
 
   get isTimeout() {
@@ -133,7 +135,7 @@ class Game extends Component {
     this.setState(
       {
         shuffle: true,
-        matrix: getShuffled(matrix),
+        matrix: getShuffled(matrix, this.props.matching),
         shuffleTimes: voluntary ? shuffleTimes - 1 : shuffleTimes
       },
       () => {
@@ -145,8 +147,8 @@ class Game extends Component {
   }
 
   tryLink(selected) {
-    const link =
-      selected.length === 2 ? isLinkable(...selected, this.state.matrix) : false
+    const link = selected.length === 2 ?
+      isLinkable(...selected, this.state.matrix, this.props.matching) : false
 
     if (link) {
       console.log(link)
@@ -181,8 +183,8 @@ class Game extends Component {
   }
 
   handleStart = () => {
-    const { columns, rows, range, zeroThrottle, suggestTimes, shuffleTimes } = this.props
-    const matrix = genMatrix(columns, rows, range, zeroThrottle)
+    const { columns, rows, range, zeroThrottle, suggestTimes, shuffleTimes, matching } = this.props
+    const matrix = genMatrix(columns, rows, range, zeroThrottle, matching)
     // const matrix = [[0,0,0,0,0,0],[0,0,0,6,0,0],[0,0,0,2,0,0],[0,2,0,0,0,0],[0,0,6,0,0,0],[0,0,0,0,0,0]]
     this.setState({
       matrix,
@@ -208,7 +210,7 @@ class Game extends Component {
 
     this.setState(
       {
-        suggestion: getSuggestion(matrix),
+        suggestion: getSuggestion(matrix, this.props.matching),
         suggestTimes: suggestTimes - 1
       },
       () => {
@@ -321,7 +323,7 @@ class Game extends Component {
         <Board
           key="board"
           selected={[]}
-          matrix={genMatrix(columns, rows, 0, 0, false)}
+          matrix={genMatrix(columns, rows, 0, 0, false, false)}
           cellSize={cellSize}
           cellMargin={cellMargin}
           origin={origin}

@@ -30,7 +30,10 @@ class Board extends Component {
               key={x + ',' + y}
               className={
                 'cell item-' +
-                value +
+                Math.abs(value) +
+                (value < 0
+                  ? ' matched'
+                  : '') +
                 (selected.find(p => p[0] === x && p[1] === y)
                   ? ' selected'
                   : '') +

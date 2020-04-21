@@ -26,6 +26,10 @@
   background-repeat: no-repeat;
 }
 
+.cell.matched {
+  filter: invert(1);
+}
+
 .cell.selected {
   border: 2px solid red;
 }

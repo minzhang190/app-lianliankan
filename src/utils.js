@@ -15,13 +15,13 @@ function frameMatrix(
   return [top, ...middle, bottom]
 }
 
-function isValid(matrix) {
+function isValid(matrix, matching) {
   if (isGoalAccomplished(matrix)) return false
-  if (isGameStuck(matrix)) return false
+  if (isGameStuck(matrix, matching)) return false
   return true
 }
 
-export function genMatrix(cols, rows, n, throttle = 0.5, checkValid=true) {
+export function genMatrix(cols, rows, n, throttle = 0.5, matching = false, checkValid = true) {
   if ((cols * rows) % 2 !== 0) throw Error('cols*rows结果必须为偶数')
   let selected = []
   const selectNumber = Math.floor(cols * rows * throttle / 2);
@@ -31,18 +31,18 @@ export function genMatrix(cols, rows, n, throttle = 0.5, checkValid=true) {
   })
   selected = [...selected, ...[...Array(selectNumber - selected.length)]
     .map((_, index) => [Math.random(), index + 1])]
-  const a = [...selected, ...selected, ...[...Array(cols * rows - selected.length * 2)]
+  const matched = selected.map(x => [Math.random(), matching ? -x[1] : x[1]]);
+  const a = [...selected, ...matched, ...[...Array(cols * rows - selected.length * 2)]
       .map(() => [Math.random(), 0])]
     .sort((a, b) => a[0] - b[0])
     .map(a => a[1])
   const matrix = frameMatrix(
     [...Array(rows)].map((value, y) => a.slice(y * cols, (y + 1) * cols))
   )
-  if (checkValid && !isValid(matrix)) {
-    return genMatrix(...arguments)
-  } else {
+  if (!checkValid || isValid(matrix, matching)) {
     return matrix
   }
+  return genMatrix(...arguments)
 }
 
 export function matrixForPrint(matrix) {
@@ -204,7 +204,7 @@ function isThreeLineLink(p1, p2, matrix) {
   return false
 }
 
-export function getAllLink(matrix) {
+export function getAllLink(matrix, matching) {
   const { rows, cols } = getMatrixDimension(matrix)
   const ret = []
   for (let y = 0; y < rows; y++) {
@@ -216,10 +216,9 @@ export function getAllLink(matrix) {
         for (let xx = 0; xx < cols; xx++) {
           const p2 = [xx, yy]
           const v2 = getMatrixValue(p2[0], p2[1], matrix)
-          if (v1 !== v2) continue
+          if (v2 === 0) continue
           if (isPointsEqual(p1, p2)) continue
-
-          if (isLinkable(p1, p2, matrix)) {
+          if (isLinkable(p1, p2, matrix, matching)) {
             ret.push([p1, p2])
           }
         }
@@ -242,12 +241,14 @@ Array.prototype.sum = function() { // eslint-disable-line
 
 export function isGoalAccomplished(matrix) {
   for (let i = 0; i < matrix.length; i++) {
-    if(matrix[i].sum() > 0) return false
+    for (let j = 0; j < matrix[i].length; j++) {
+      if (matrix[i][j] !== 0) return false
+    }
   }
   return true
 }
 
-export function isGameStuck(matrix) {
+export function isGameStuck(matrix, matching) {
   // return getAllLink(matrix).length === 0
   const { rows, cols } = getMatrixDimension(matrix)
   for (let y = 0; y < rows; y++) {
@@ -259,8 +260,9 @@ export function isGameStuck(matrix) {
         for (let xx = 0; xx < cols; xx++) {
           const p2 = [xx, yy]
           const v2 = getMatrixValue(p2[0], p2[1], matrix)
-          if (v1 !== v2 || isPointsEqual(p1, p2)) continue
-          if (isLinkable(p1, p2, matrix)) {
+          if (v2 === 0) continue
+          if (isPointsEqual(p1, p2)) continue
+          if (isLinkable(p1, p2, matrix, matching)) {
             return false
           }
         }
@@ -275,7 +277,7 @@ function randomPoint(cols, rows) {
   return [Math.floor(Math.random() * cols), Math.floor(Math.random() * rows)]
 }
 
-export function getSuggestion(matrix) {
+export function getSuggestion(matrix, matching) {
   const { rows, cols } = getMatrixDimension(matrix)
   let p1 = null
   let v1 = 0
@@ -288,20 +290,21 @@ export function getSuggestion(matrix) {
     for(let y=0; y<rows; y++) {
       const p2 = [x, y]
       const v2 = getMatrixValue(...p2, matrix)
-      if (v2!==v1 || isPointsEqual(p1, p2)) continue
-      const link = isLinkable(p1, p2, matrix)
+      if (v2 === 0) continue
+      if (isPointsEqual(p1, p2)) continue
+      const link = isLinkable(p1, p2, matrix, matching)
       if (link) return link
     }
   }
-  return getSuggestion(matrix) // 递归
+  return getSuggestion(...arguments) // 递归
 }
 
-export function getShuffled(matrix, checkValid = true) {
+export function getShuffled(matrix, matching, checkValid = true) {
   const newMatrix = JSON.parse(JSON.stringify(matrix))
   const coordsToShuffle = []
   matrix.forEach((row, y) => {
     row.forEach((value, x) => {
-      if (getMatrixValue(x, y, matrix) > 0) {
+      if (getMatrixValue(x, y, matrix) !== 0) {
         coordsToShuffle.push([x, y])
       }
     })
@@ -314,17 +317,17 @@ export function getShuffled(matrix, checkValid = true) {
       const to = coordsShuffled[i]
       setMatrixValue(getMatrixValue(...from, matrix), ...to, newMatrix)
   })
-  if (checkValid && !isValid(newMatrix)) {
-    return getShuffled(...arguments)
-  } else {
+  if (!checkValid || isValid(newMatrix, matching)) {
     return newMatrix
   }
+  return getShuffled(...arguments)
 }
 
-export function isLinkable(p1, p2, matrix) {
+export function isLinkable(p1, p2, matrix, matching) {
   const v1 = getMatrixValue(...p1, matrix)
   const v2 = getMatrixValue(...p2, matrix)
-  if (v1 !== v2) return false
+  if (!matching && v1 !== v2) return false
+  if (matching && v1 + v2 !== 0) return false
 
   const link1 = isOneLineLink(p1, p2, matrix)
   if (link1) return link1
