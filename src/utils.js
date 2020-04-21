@@ -21,16 +21,21 @@ function isValid(matrix, matching) {
   return true
 }
 
-export function genMatrix(cols, rows, n, throttle = 0.5, matching = false, checkValid = true) {
+export function genMatrix(cols, rows, n, use, throttle = 0.5, matching = false, checkValid = true) {
   if ((cols * rows) % 2 !== 0) throw Error('cols*rows结果必须为偶数')
+  if (use < 0) use = n;
+  const range = [...Array(n)].map((_, index) => [Math.random(), index + 1])
+    .sort((a, b) => a[0] - b[0])
+    .map(a => a[1])
+    .slice(0, use)
   let selected = []
   const selectNumber = Math.floor(cols * rows * throttle / 2);
-  [...Array(n)].forEach((_, index) => {
-    selected = [...selected, ...[...Array(Math.floor(selectNumber / n))]
-      .map(() => [Math.random(), index + 1])]
+  [...Array(use)].forEach((_, index) => {
+    selected = [...selected, ...[...Array(Math.floor(selectNumber / use))]
+      .map(() => [Math.random(), range[index]])]
   })
   selected = [...selected, ...[...Array(selectNumber - selected.length)]
-    .map((_, index) => [Math.random(), index + 1])]
+    .map((_, index) => [Math.random(), range[index]])]
   const matched = selected.map(x => [Math.random(), matching ? -x[1] : x[1]]);
   const a = [...selected, ...matched, ...[...Array(cols * rows - selected.length * 2)]
       .map(() => [Math.random(), 0])]

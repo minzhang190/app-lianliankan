@@ -34,6 +34,7 @@ class Game extends Component {
     columns: PropTypes.number,
     rows: PropTypes.number,
     range: PropTypes.number,
+    use: PropTypes.number,
     zeroThrottle: PropTypes.number,
     maxCellSize: PropTypes.number,
     cellMargin: PropTypes.number,
@@ -53,6 +54,7 @@ class Game extends Component {
     columns: 2,
     rows: 2,
     range: 9,
+    use: -1,
     zeroThrottle: 1,
     maxCellSize: 50,
     cellMargin: 2,
@@ -191,8 +193,8 @@ class Game extends Component {
   }
 
   handleStart = () => {
-    const { columns, rows, range, zeroThrottle, suggestTimes, shuffleTimes, matching } = this.props
-    const matrix = genMatrix(columns, rows, range, zeroThrottle, matching)
+    const { columns, rows, range, use, zeroThrottle, suggestTimes, shuffleTimes, matching } = this.props
+    const matrix = genMatrix(columns, rows, range, use, zeroThrottle, matching)
     // const matrix = [[0,0,0,0,0,0],[0,0,0,6,0,0],[0,0,0,2,0,0],[0,2,0,0,0,0],[0,0,6,0,0,0],[0,0,0,0,0,0]]
     this.setState({
       matrix,
@@ -334,7 +336,7 @@ class Game extends Component {
         <Board
           key="board"
           selected={[]}
-          matrix={genMatrix(columns, rows, 0, 0, false, false)}
+          matrix={genMatrix(columns, rows, 0, 0, 0, false, false)}
           cellSize={cellSize}
           cellMargin={cellMargin}
           origin={origin}
