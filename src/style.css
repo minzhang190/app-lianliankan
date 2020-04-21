@@ -26,10 +26,6 @@
   background-repeat: no-repeat;
 }
 
-.cell.matched {
-  filter: invert(1);
-}
-
 .cell.selected {
   border: 2px solid red;
 }
@@ -42,42 +38,6 @@
   background-color: red;
   opacity: 0;
   transform: rotateY(180deg);
-}
-
-.item-1 {
-  background-image: url('./images/apple.png');
-}
-
-.item-2 {
-  background-image: url('./images/cherry.png');
-}
-
-.item-3 {
-  background-image: url('./images/grape.png');
-}
-
-.item-4 {
-  background-image: url('./images/lemon.png');
-}
-
-.item-5 {
-  background-image: url('./images/orange.png');
-}
-
-.item-6 {
-  background-image: url('./images/pear.png');
-}
-
-.item-7 {
-  background-image: url('./images/pineapple.png');
-}
-
-.item-8 {
-  background-image: url('./images/strawberry.png');
-}
-
-.item-9 {
-  background-image: url('./images/watermelon.png');
 }
 
 .lines {
