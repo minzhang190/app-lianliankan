@@ -288,6 +288,31 @@ export function getSuggestion(matrix) {
   return getSuggestion(matrix) // 递归
 }
 
+export function getShuffled(matrix, checkValid = true) {
+  const newMatrix = JSON.parse(JSON.stringify(matrix))
+  const coordsToShuffle = []
+  matrix.forEach((row, y) => {
+    row.forEach((value, x) => {
+      if (getMatrixValue(x, y, matrix) > 0) {
+        coordsToShuffle.push([x, y])
+      }
+    })
+  })
+  const coordsShuffled = coordsToShuffle
+    .map(a => [Math.random(), a])
+    .sort((a, b) => a[0] - b[0])
+    .map(a => a[1])
+  coordsToShuffle.forEach((from, i) => {
+      const to = coordsShuffled[i]
+      setMatrixValue(getMatrixValue(...from, matrix), ...to, newMatrix)
+  })
+  if (checkValid && !isValid(newMatrix)) {
+    return getShuffled(...arguments)
+  } else {
+    return newMatrix
+  }
+}
+
 export function isLinkable(p1, p2, matrix) {
   const v1 = getMatrixValue(...p1, matrix)
   const v2 = getMatrixValue(...p2, matrix)

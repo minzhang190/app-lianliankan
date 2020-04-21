@@ -13,7 +13,8 @@ import {
   isGameStuck,
   getAllLink,
   isPointsEqual,
-  getSuggestion
+  getSuggestion,
+  getShuffled
 } from './utils'
 
 import {
@@ -35,7 +36,8 @@ class Game extends Component {
     zeroThrottle: PropTypes.number,
     maxCellSize: PropTypes.number,
     cellMargin: PropTypes.number,
-    gameTimeLimit: PropTypes.number
+    gameTimeLimit: PropTypes.number,
+    shuffleOnStuck: PropTypes.bool
   }
 
   static defaultProps = {
@@ -47,7 +49,8 @@ class Game extends Component {
     zeroThrottle: 1,
     maxCellSize: 50,
     cellMargin: 2,
-    gameTimeLimit: 120
+    gameTimeLimit: 120,
+    shuffleOnStuck: false
   }
 
   state = {
@@ -55,12 +58,14 @@ class Game extends Component {
     selected: [],
     suggestion: [], // 建议
     suggestTimes: 3,
+    shuffleTimes: 3,
     matrix: null,
     origin: [0, 0], // 原点
     cellSize: 32,
     linkPoints: [],
     won: false,
-    stuck: false
+    stuck: false,
+    shuffle: false
   }
 
   componentWillMount() {
@@ -108,11 +113,29 @@ class Game extends Component {
     if (this.isTimeout) return false
     if (this.state.won) return false
     if (this.state.stuck) return false
+    if (this.state.shuffle) return false
     return true
   }
 
   get dimmed() {
     return this.isGamePlaying && !this.isPlayable
+  }
+
+  doShuffle(voluntary) {
+    const { matrix, shuffleTimes } = this.state
+
+    this.setState(
+      {
+        shuffle: true,
+        matrix: getShuffled(matrix),
+        shuffleTimes: voluntary ? shuffleTimes - 1 : shuffleTimes
+      },
+      () => {
+        setTimeout(() => {
+          this.setState({ shuffle: false })
+        }, 500)
+      }
+    )
   }
 
   tryLink(selected) {
@@ -134,7 +157,11 @@ class Game extends Component {
               if (this.checkIsWon()) {
                 this.setState({ won: true })
               } else if (this.checkIsStuck()) {
-                this.setState({ stuck: true })
+                if (this.props.shuffleOnStuck) {
+                  this.doShuffle(false)
+                } else {
+                  this.setState({ stuck: true })
+                }
               }
             })
           }, 200)
@@ -159,7 +186,8 @@ class Game extends Component {
       start: false,
       selected: [],
       suggestion: [],
-      suggestTimes: 3
+      suggestTimes: 3,
+      shuffleTimes: 3
     })
   }
 
@@ -183,6 +211,10 @@ class Game extends Component {
         }, 500)
       }
     )
+  }
+
+  handleShuffle = () => {
+    this.doShuffle(true)
   }
 
   handleTick = () => {
@@ -217,6 +249,10 @@ class Game extends Component {
         icon = '😫'
         text = 'You Lost, Time Is Running Out!'
         break
+      case this.state.shuffle:
+        icon = '🙃'
+        text = 'Shuffling Tiles...'
+        break
       case this.state.stuck:
         icon = '😱'
         text = 'You Lost, No Further Movement Can Be Made.'
@@ -237,9 +273,11 @@ class Game extends Component {
           <br />
           <div style={{ marginTop: 20 }}>{text}</div>
           <br />
-          <Button positive style={{ marginTop: 20 }} onClick={this.handleStart}>
-            再来一局！
-          </Button>
+          {this.state.shuffle ? null :
+            <Button positive style={{ marginTop: 20 }} onClick={this.handleStart}>
+              再来一局！
+            </Button>
+          }
         </Header>
       </Dimmer>
     )
@@ -316,7 +354,7 @@ class Game extends Component {
   }
 
   renderStartButton() {
-    return (
+    return this.state.shuffle ? null : (
       <Segment>
         {!this.isPlayable ? (
           <Button positive attached="bottom" onClick={this.handleStart}>
@@ -347,9 +385,25 @@ class Game extends Component {
     ) : null
   }
 
+  renderShuffleButton() {
+    const { shuffleTimes } = this.state
+    return this.isPlayable ? (
+      <Segment>
+        <Button
+          color="orange"
+          attached="bottom"
+          disabled={shuffleTimes === 0}
+          onClick={this.handleShuffle}
+        >
+          洗牌 (还剩{shuffleTimes}次)
+        </Button>
+      </Segment>
+    ) : null
+  }
+
   renderCountDown() {
     const { duration } = this.state
-    return this.isPlayable ? (
+    return (this.isPlayable || this.state.shuffle) ? (
       <Segment textAlign="center">
         <CountDown duration={duration} onTick={this.handleTick} />
       </Segment>
@@ -366,6 +420,7 @@ class Game extends Component {
             <Segment.Group compact>
               {this.renderCountDown()}
               {this.renderSuggestionButton()}
+              {this.renderShuffleButton()}
               {this.renderStartButton()}
             </Segment.Group>
           </Grid.Column>
