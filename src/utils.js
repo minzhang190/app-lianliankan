@@ -49,7 +49,7 @@ export function matrixForPrint(matrix) {
   return matrix.map(row => row.join(' ')).join('\n')
 }
 
-function getMatrixValue(x, y, matrix) {
+export function getMatrixValue(x, y, matrix) {
   return matrix[y][x]
 }
 

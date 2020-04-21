@@ -12,6 +12,7 @@ import {
   isGoalAccomplished,
   isGameStuck,
   getAllLink,
+  getMatrixValue,
   isPointsEqual,
   getSuggestion,
   getShuffled
@@ -41,7 +42,9 @@ class Game extends Component {
     suggestTimes: PropTypes.number,
     shuffleTimes: PropTypes.number,
     shuffleOnStuck: PropTypes.bool,
-    matching: PropTypes.bool
+    matching: PropTypes.bool,
+    onClick: PropTypes.func,
+    onLinked: PropTypes.func
   }
 
   static defaultProps = {
@@ -58,7 +61,9 @@ class Game extends Component {
     suggestTimes: 3,
     shuffleTimes: 3,
     shuffleOnStuck: false,
-    matching: false
+    matching: false,
+    onClick: () => {},
+    onLinked: () => {}
   }
 
   state = {
@@ -152,6 +157,9 @@ class Game extends Component {
 
     if (link) {
       console.log(link)
+      this.props.onLinked.call(this, selected,
+        getMatrixValue(...selected[0], this.state.matrix),
+        getMatrixValue(...selected[1], this.state.matrix))
       this.setState(
         {
           linkPoints: link,
@@ -242,6 +250,9 @@ class Game extends Component {
         selected = [selected[0], point]
       }
     }
+
+    this.props.onClick.call(this, point,
+      getMatrixValue(...point, this.state.matrix), selected)
 
     this.setState({ selected }, () => {
       this.tryLink(selected)
