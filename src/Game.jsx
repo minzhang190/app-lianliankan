@@ -37,6 +37,9 @@ class Game extends Component {
     maxCellSize: PropTypes.number,
     cellMargin: PropTypes.number,
     gameTimeLimit: PropTypes.number,
+    durationIncrease: PropTypes.number,
+    suggestTimes: PropTypes.number,
+    shuffleTimes: PropTypes.number,
     shuffleOnStuck: PropTypes.bool
   }
 
@@ -50,6 +53,9 @@ class Game extends Component {
     maxCellSize: 50,
     cellMargin: 2,
     gameTimeLimit: 120,
+    durationIncrease: 3,
+    suggestTimes: 3,
+    shuffleTimes: 3,
     shuffleOnStuck: false
   }
 
@@ -147,7 +153,7 @@ class Game extends Component {
       this.setState(
         {
           linkPoints: link,
-          duration: this.state.duration + 3,
+          duration: this.state.duration + this.props.durationIncrease,
           matrix: removePair(selected, this.state.matrix),
           selected: []
         },
@@ -175,7 +181,7 @@ class Game extends Component {
   }
 
   handleStart = () => {
-    const { columns, rows, range, zeroThrottle } = this.props
+    const { columns, rows, range, zeroThrottle, suggestTimes, shuffleTimes } = this.props
     const matrix = genMatrix(columns, rows, range, zeroThrottle)
     // const matrix = [[0,0,0,0,0,0],[0,0,0,6,0,0],[0,0,0,2,0,0],[0,2,0,0,0,0],[0,0,6,0,0,0],[0,0,0,0,0,0]]
     this.setState({
@@ -186,8 +192,8 @@ class Game extends Component {
       start: false,
       selected: [],
       suggestion: [],
-      suggestTimes: 3,
-      shuffleTimes: 3
+      suggestTimes: suggestTimes,
+      shuffleTimes: shuffleTimes
     })
   }
 
