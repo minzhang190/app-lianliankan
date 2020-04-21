@@ -23,10 +23,18 @@ function isValid(matrix) {
 
 export function genMatrix(cols, rows, n, throttle = 0.5, checkValid=true) {
   if ((cols * rows) % 2 !== 0) throw Error('cols*rows结果必须为偶数')
-  let a = [...Array(cols * rows / 2)].map(() =>
-    Math.ceil(Math.random() > throttle ? 0 : Math.random() * n)
-  )
-  a = [...a, ...a].sort(() => Math.random() - 0.5)
+  let selected = []
+  const selectNumber = Math.floor(cols * rows * throttle / 2);
+  [...Array(n)].forEach((_, index) => {
+    selected = [...selected, ...[...Array(Math.floor(selectNumber / n))]
+      .map(() => [Math.random(), index + 1])]
+  })
+  selected = [...selected, ...[...Array(selectNumber - selected.length)]
+    .map((_, index) => [Math.random(), index + 1])]
+  const a = [...selected, ...selected, ...[...Array(cols * rows - selected.length * 2)]
+      .map(() => [Math.random(), 0])]
+    .sort((a, b) => a[0] - b[0])
+    .map(a => a[1])
   const matrix = frameMatrix(
     [...Array(rows)].map((value, y) => a.slice(y * cols, (y + 1) * cols))
   )
