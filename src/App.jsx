@@ -6,19 +6,11 @@ import './style.css'
 
 class App extends Component {
   state = {
-    cssLoaded: false,
-    dataJSLoaded: false,
-    dataCSSLoaded: false,
     props: null
   }
 
   componentDidMount() {
     const el = document.querySelector('link[rel="stylesheet"]')
-    el.addEventListener('load', () =>
-      this.setState({
-        cssLoaded: true
-      })
-    )
 
     const data = new URLSearchParams(window.location.search).get('data') || 'default';
     const app = this, audio = [null];
@@ -53,7 +45,7 @@ class App extends Component {
             props.onNext = showLevel;
         }
 
-        app.setState({ dataJSLoaded: true, props: props });
+        app.setState({ props: props });
     };
 
     window.loadSound = (array) => {
@@ -66,9 +58,6 @@ class App extends Component {
     const styleData = document.createElement('link');
     styleData.rel = 'stylesheet';
     styleData.href = `data/${data}/style.css`;
-    styleData.addEventListener('load', () => {
-        app.setState({ dataCSSLoaded: true });
-    });
     document.head.appendChild(styleData);
 
     const scriptDefault = document.createElement('script');
@@ -84,8 +73,8 @@ class App extends Component {
   }
 
   render() {
-    const { cssLoaded, dataJSLoaded, dataCSSLoaded, props } = this.state
-    return (cssLoaded && dataJSLoaded && dataCSSLoaded) ? (
+    const { props } = this.state
+    return props ? (
       <Game {...props} />
     ) : null;
   }
