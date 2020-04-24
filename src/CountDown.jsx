@@ -31,7 +31,7 @@ class CountDown extends Component {
     return (
       <Statistic size='small'>
         <Statistic.Value>{duration}''</Statistic.Value>
-        <Statistic.Label>剩余时间</Statistic.Label>
+        <Statistic.Label>Remaining Time</Statistic.Label>
       </Statistic>
     )
   }

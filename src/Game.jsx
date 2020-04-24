@@ -296,7 +296,7 @@ class Game extends Component {
           <br />
           {this.state.shuffle ? null :
             <Button positive style={{ marginTop: 20 }} onClick={this.handleStart}>
-              再来一局！
+              Play Again!
             </Button>
           }
         </Header>
@@ -379,11 +379,11 @@ class Game extends Component {
       <Segment>
         {!this.isPlayable ? (
           <Button positive attached="bottom" onClick={this.handleStart}>
-            开始
+            Kāishǐ
           </Button>
         ) : (
           <Button negative attached="bottom" onClick={this.handleStop}>
-            结束
+            Jiéshù
           </Button>
         )}
       </Segment>
@@ -400,7 +400,7 @@ class Game extends Component {
           disabled={suggestTimes === 0}
           onClick={this.handleSuggestion}
         >
-          提示 (还剩{suggestTimes}次)
+          Hint ({suggestTimes} left)
         </Button>
       </Segment>
     ) : null
@@ -416,7 +416,7 @@ class Game extends Component {
           disabled={shuffleTimes === 0}
           onClick={this.handleShuffle}
         >
-          洗牌 (还剩{shuffleTimes}次)
+          Shuffle ({shuffleTimes} left)
         </Button>
       </Segment>
     ) : null
@@ -434,7 +434,7 @@ class Game extends Component {
   render() {
     return (
       <Container style={{ marginTop: '1em' }}>
-        <Header as="h1">连连看</Header>
+        <Header as="h1">Liánliánkàn</Header>
         <Grid centered stretched celled="internally">
           <Grid.Column width={13}>{this.renderGameBoard()}</Grid.Column>
           <Grid.Column width={3}>
