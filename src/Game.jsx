@@ -45,7 +45,8 @@ class Game extends Component {
     shuffleOnStuck: PropTypes.bool,
     matching: PropTypes.bool,
     onClick: PropTypes.func,
-    onLinked: PropTypes.func
+    onLinked: PropTypes.func,
+    onNext: PropTypes.func
   }
 
   static defaultProps = {
@@ -65,7 +66,8 @@ class Game extends Component {
     shuffleOnStuck: false,
     matching: false,
     onClick: () => {},
-    onLinked: () => {}
+    onLinked: () => {},
+    onNext: null
   }
 
   state = {
@@ -299,6 +301,12 @@ class Game extends Component {
               Play Again!
             </Button>
           }
+          <br />
+          {this.state.won && this.props.onNext ?
+            <Button positive style={{ marginTop: 20 }} onClick={this.props.onNext}>
+              Next Level &gt;&gt;
+            </Button>
+          : null}
         </Header>
       </Dimmer>
     )

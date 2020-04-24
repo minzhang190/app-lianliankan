@@ -36,6 +36,26 @@ class App extends Component {
     };
 
     window.props = {};
+    let level = 0;
+
+    const showLevel = () => {
+        if (!Array.isArray(window.props)) {
+            window.props = [window.props];
+        }
+
+        const props = Object.assign({
+            key: level,
+            onClick: onClick,
+            onLinked: onLinked
+        }, window.props[level]);
+
+        if (++level < window.props.length) {
+            props.onNext = showLevel;
+        }
+
+        app.setState({ dataJSLoaded: true, props: props });
+    };
+
     window.loadSound = (array) => {
         array.forEach(path => {
             const currentAudio = new Audio(`data/${data}/${path}`);
@@ -59,11 +79,7 @@ class App extends Component {
     const scriptData = document.createElement('script')
     scriptData.src = `data/${data}/script.js`;
     scriptData.async = false;
-    scriptData.addEventListener('load', () => {
-        window.props.onClick = onClick;
-        window.props.onLinked = onLinked;
-        app.setState({ dataJSLoaded: true, props: window.props });
-    });
+    scriptData.addEventListener('load', showLevel);
     document.body.appendChild(scriptData);
   }
 
