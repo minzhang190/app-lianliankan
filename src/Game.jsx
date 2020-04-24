@@ -194,6 +194,10 @@ class Game extends Component {
     }
   }
 
+  componentDidMount() {
+    this.handleStart()
+  }
+
   handleStart = () => {
     const { columns, rows, range, use, zeroThrottle, suggestTimes, shuffleTimes, matching } = this.props
     const matrix = genMatrix(columns, rows, range, use, zeroThrottle, matching)
