@@ -29,6 +29,7 @@ import {
 
 class Game extends Component {
   static propTypes = {
+    headline: PropTypes.string,
     width: PropTypes.number,
     height: PropTypes.number,
     columns: PropTypes.number,
@@ -50,6 +51,7 @@ class Game extends Component {
   }
 
   static defaultProps = {
+    headline: '',
     width: 800,
     height: 600,
     columns: 2,
@@ -446,7 +448,7 @@ class Game extends Component {
   render() {
     return (
       <Container style={{ marginTop: '1em' }}>
-        <Header as="h1">Liánliánkàn</Header>
+        <Header as="h1">Liánliánkàn{this.props.headline ? ' - ' + this.props.headline : ''}</Header>
         <Grid centered stretched celled="internally">
           <Grid.Column width={13}>{this.renderGameBoard()}</Grid.Column>
           <Grid.Column width={3}>

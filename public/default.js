@@ -1,4 +1,5 @@
 var props = {
+    headline: '',
     width: 800,
     height: 600,
     columns: 8,
