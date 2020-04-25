@@ -37,6 +37,7 @@ class App extends Component {
 
         const props = Object.assign({
             key: level,
+            autoStart: level !== 0,
             onClick: onClick,
             onLinked: onLinked
         }, window.props[level]);

@@ -45,6 +45,7 @@ class Game extends Component {
     shuffleTimes: PropTypes.number,
     shuffleOnStuck: PropTypes.bool,
     matching: PropTypes.bool,
+    autoStart: PropTypes.bool,
     onClick: PropTypes.func,
     onLinked: PropTypes.func,
     onNext: PropTypes.func
@@ -67,6 +68,7 @@ class Game extends Component {
     shuffleTimes: 3,
     shuffleOnStuck: false,
     matching: false,
+    autoStart: false,
     onClick: () => {},
     onLinked: () => {},
     onNext: null
@@ -197,7 +199,9 @@ class Game extends Component {
   }
 
   componentDidMount() {
-    this.handleStart()
+    if (this.props.autoStart) {
+      this.handleStart()
+    }
   }
 
   handleStart = () => {
