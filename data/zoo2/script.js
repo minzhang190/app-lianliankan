@@ -8,19 +8,19 @@ props = [Object.assign({}, props, {
     headline: 'Dòngwùyuán (2) - Level 1',
     columns: 6,
     rows: 6,
-    use: 6,
+    use: 5,
     matching: false
 }), Object.assign({}, props, {
     headline: 'Dòngwùyuán (2) - Level 2',
     columns: 10,
     rows: 8,
-    use: 12,
+    use: 9,
     matching: false
 }), Object.assign({}, props, {
     headline: 'Dòngwùyuán (2) - Level 3',
     columns: 6,
     rows: 6,
-    use: 6,
+    use: 5,
     matching: true
 })];
 
